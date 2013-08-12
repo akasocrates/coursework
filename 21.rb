@@ -1,65 +1,127 @@
-deck = {
-	h1:1, h2:2, h3:3, h4:4, h5:5, h6:6, h7:7, h8:8, h9:9, h10:10, hj:10, hq:10, hk:10, ha:11,
-	c1:1, c2:2, c3:3, c4:4, c5:5, c6:6, c7:7, c8:8, c9:9, c10:10, cj:10, cq:10, ck:10, ca:11,
-	s1:1, s2:2, s3:3, s4:4, s5:5, s6:6, s7:7, s8:8, s9:9, s10:10, sj:10, sq:10, sk:10, sa:11,
-	d1:1, d2:2, d3:3, d4:4, d5:5, d6:6, d7:7, d8:8, d9:9, d10:10, dj:10, dq:10, dk:10, da:11
-} 
-
-arr_deck = deck.keys
-
-
-#PLAYER
-player_card1 = deck[arr_deck.sample]
-player_card2 = deck[arr_deck.sample]
-player_hand = player_card1 + player_card2
-puts 'After the first two cards, Player\'s hand is ' + player_hand.to_s
-
-puts 'hit or stay?'
-if gets.chomp.upcase = 'HIT'
-	player_card = deck[arr_deck.sample]
-	player_hand = player_hand + player_card
-end
-
-if player_hand > 21
-	puts 'Player loses!'	
-end
+deck = [
+	['2 of hearts', 2], ['3 of hearts', 3], ['4 of hearts', 4], ['5 of hearts', 5], ['6 of hearts', 6], ['7 of hearts', 7], ['8 of hearts', 8], ['9 of hearts', 9],
+	['10 of hearts', 10], ['jack of hearts', 10], ['queen of hearts', 10], ['king of hearts', 10], ['ace of hearts', 11], ['2 of diamonds', 2], ['3 of diamonds', 3],
+	['4 of diamonds', 4], ['5 of diamonds', 5], ['6 of diamonds', 6], ['7 of diamonds', 7], ['8 of diamonds', 8], ['9 of diamonds', 9], ['10 of diamonds', 10],
+	['jack of diamonds', 10], ['queen of diamonds', 10], ['king of diamonds', 10], ['ace of diamonds', 11], ['2 of clubs', 2], ['3 of clubs', 3], ['4 of clubs', 4],
+	['5 of clubs', 5], ['6 of clubs', 6], ['7 of clubs', 7], ['8 of clubs', 8], ['9 of clubs', 9], ['10 of clubs', 10], ['jack of clubs', 10], ['queen of clubs', 10],
+	['king of clubs', 10], ['ace of clubs', 11], ['2 of spades', 2], ['3 of spades', 3], ['4 of spades', 4], ['5 of spades', 5], ['6 of spades', 6], ['7 of spades', 7],
+	['8 of spades', 8], ['9 of spades', 9], ['10 of spades', 10], ['jack of spades', 10], ['queen of spades', 10], ['king of spades', 10], ['ace of spades', 11]
+]
 
 
 
+def calculate_total(cards) # input is an array of arrays
+	arr = cards.map { |e| e[1]  } # gets second element of the array and loads that into a new array
 
+	total = 0
+	arr.each do |value|
+		total = total + value
+	end
 
+	arr.select { |e| e == 11}.count.times do # corrects for aces
+		if total > 21
+			total = total - 10
+		end
+	end
 
-
-
-
-
-
-
-
-
-#DEALER
-dealer_hand = 0
-while dealer_hand < 17
-	dealer_card = deck[arr_deck.sample]
-	dealer_hand = dealer_hand + dealer_card 
+return total
 end
 
 
+deck.shuffle!
 
-if dealer_hand < player_hand
-	dealer_card = deck[arr_deck.sample]
-	dealer_hand = dealer_hand + dealer_card 
-	
+
+# Deal first two cards
+mycards = []
+dealercards = []
+puts ''
+
+mycards.push(deck.pop) # [['2 of spades, 2], [4 of hearts, 4],...]
+dealercards.push(deck.pop)
+mycards.push(deck.pop)
+dealercards.push(deck.pop)
+
+mytotal = calculate_total(mycards)
+dealertotal = calculate_total(dealercards)
+
+puts 'My cards: ' + mycards.to_s + '. Total is ' + mytotal.to_s
+puts 'Dealer cards: ' + dealercards.to_s + '. Total is ' + calculate_total(dealercards).to_s
+
+if mytotal == 21
+  puts 'Congratulations, you hit blackjack! You win!'
+  exit
 end
 
-puts
-puts 'Dealer hand is ' + dealer_hand.to_s
-
-if dealer_hand > 21
-	puts 'Player wins!'
-elsif dealer_hand < player_hand
-	puts 'Player wins!'
-else
-	puts 'Dealer wins!'
+if mytotal > 21
+  puts 'You bust. Sorry, you lose.'
 end
+
+if dealertotal > 21
+  puts 'Dealer busts! You win!'
+end
+
+
+puts''
+
+# player plays
+
+while mytotal < 21
+  puts 'What do you want to do? 1) for Hit 2) for Stay'
+  reply = gets.chomp
+
+  if !['1', '2'].include?(reply)
+    puts 'Error: you must enter 1 or 2.'
+    next
+  end
+
+  if reply == '2'
+    puts 'You have chosen to stay. Now it\'s the dealer\'s turn.'
+    break
+  end
+
+  if reply == '1'
+    newcard = deck.pop
+    mycards.push(newcard)
+    mytotal = calculate_total(mycards)
+    puts ''
+    puts 'You\'re new card is: ' + newcard.to_s + '. You\'re current total is: ' + mytotal.to_s
+  end
+
+end
+
+puts ''
+
+if mytotal == 21
+  puts 'You\'re total is 21! Congratulations. You win!'
+  exit
+elsif mytotal > 21
+  puts 'You bust. Sorry, you lose.'
+  exit
+end
+
+
+# dealer plays
+
+while (dealertotal < 17 || dealertotal < mytotal)
+  newcard = deck.pop
+  dealercards.push(newcard)
+  puts 'Dealer\'s new card is: ' + newcard.to_s
+  dealertotal = calculate_total(dealercards)
+  if dealertotal > 21
+    puts 'Dealer total is: ' + dealertotal.to_s + ' Dealer busts! You win!'
+    exit
+  end
+
+  if (dealertotal >= mytotal || dealertotal == 21)
+    puts 'Dealer\'s total is: ' + dealertotal.to_s + ' Dealer wins!'
+    exit
+  end
+
+  puts 'Dealer\'s total is: ' + dealertotal.to_s
+
+
+end
+
+# Compare (this is where tie comes in.)
+
 
