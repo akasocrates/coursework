@@ -9,7 +9,7 @@ deck = [
 ]
 
 
-
+# method to calculates total
 def calculate_total(cards) # input is an array of arrays
 	arr = cards.map { |e| e[1]  } # gets second element of the array and loads that into a new array
 
@@ -29,6 +29,8 @@ end
 
 
 deck.shuffle!
+
+puts 'Let\'s play blackjack!'
 
 
 # Deal first two cards
@@ -53,18 +55,17 @@ if mytotal == 21
 end
 
 if mytotal > 21
-  puts 'You bust. Sorry, you lose.'
+  puts 'You busted. Sorry, you lose.'
 end
 
 if dealertotal > 21
-  puts 'Dealer busts! You win!'
+  puts 'Dealer busted! You win!'
 end
 
 
 puts''
 
 # player plays
-
 while mytotal < 21
   puts 'What do you want to do? 1) for Hit 2) for Stay'
   reply = gets.chomp
@@ -95,33 +96,35 @@ if mytotal == 21
   puts 'You\'re total is 21! Congratulations. You win!'
   exit
 elsif mytotal > 21
-  puts 'You bust. Sorry, you lose.'
+  puts 'You busted. Sorry, you lose.'
   exit
 end
 
 
 # dealer plays
-
-while (dealertotal < 17 || dealertotal < mytotal)
+while dealertotal < 17
   newcard = deck.pop
   dealercards.push(newcard)
-  puts 'Dealer\'s new card is: ' + newcard.to_s
   dealertotal = calculate_total(dealercards)
+  puts "Dealer\'s new card is: #{newcard.to_s}. New total is #{dealertotal.to_s}"
   if dealertotal > 21
-    puts 'Dealer total is: ' + dealertotal.to_s + ' Dealer busts! You win!'
+    puts 'Dealer total is: ' + dealertotal.to_s + ' Dealer busted! You win!'
     exit
   end
-
-  if (dealertotal >= mytotal || dealertotal == 21)
-    puts 'Dealer\'s total is: ' + dealertotal.to_s + ' Dealer wins!'
-    exit
-  end
-
-  puts 'Dealer\'s total is: ' + dealertotal.to_s
-
-
 end
 
 # Compare (this is where tie comes in.)
+if mytotal > dealertotal
+  puts 'Congratulations, you win!'
+elsif mytotal == dealertotal
+  puts 'You tie.'
+else
+  puts 'Sorry you lose.'
+end
+
+
+
+
+
 
 
